@@ -6,8 +6,7 @@ from django.dispatch import receiver
 
 # Create your models here.
 
-#  分类表(classification)和视频表(video)。他们是多对一的关系
-
+#  分类表(classification)和视频表(video).他们是多对一的关系
 class VideoQuerySet(models.query.QuerySet):
     # 视频总数
     def get_count(self):
@@ -34,11 +33,11 @@ class VideoQuerySet(models.query.QuerySet):
         #  通过order_by把view_count降序排序，并选取前4条数据
         return self.filter(status=0).order_by('-view_count')[:4]
 
-
+# 视频分类表
 class Classification(models.Model):
     list_display = ("title",)
-    title = models.CharField(max_length=100, blank=True, null=True)
-    status = models.BooleanField(default=True)
+    title = models.CharField(max_length=100, blank=True, null=True)  # 分类名称
+    status = models.BooleanField(default=True)  # 是否启用
 
     def __str__(self):
         return self.title
@@ -46,21 +45,21 @@ class Classification(models.Model):
     class Meta:
         db_table = "v_classification"
 
-
+#  视频表
 class Video(models.Model):
     STATUS_CHOICES = (
         ('0', '发布中'),
         ('1', '未发布'),
     )
-    title = models.CharField(max_length=100, blank=True, null=True)  # 视频标题
+    title = models.CharField(max_length=100, blank=True, null=True)  # 视频标题　blank=True是允许字段为空
     desc = models.CharField(max_length=255, blank=True, null=True)  # 视频描述
-    classification = models.ForeignKey(Classification, on_delete=models.CASCADE, null=True)
+    classification = models.ForeignKey(Classification, on_delete=models.CASCADE, null=True)  # 分类,多对一,on_delete=models.CASCADE级联删除
     file = models.FileField(max_length=255)  # 视频文件地址
     cover = models.ImageField(upload_to='cover/', blank=True, null=True)  # 视频封面
     status = models.CharField(max_length=1, choices=STATUS_CHOICES, blank=True, null=True)  # 视频状态
     view_count = models.IntegerField(default=0, blank=True)  # 观看次数
     liked = models.ManyToManyField(settings.AUTH_USER_MODEL,
-                                   blank=True, related_name="liked_videos")  # 喜欢的用户
+                                   blank=True, related_name="liked_videos")  # 喜欢的用户,settings.AUTH_USER_MODEL设置用户表
     collected = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                        blank=True, related_name="collected_videos")  # 收藏的用户
     create_time = models.DateTimeField(auto_now_add=True, blank=True, max_length=20)  # 创建时间
@@ -73,6 +72,10 @@ class Video(models.Model):
         db_table = "v_video"
 
     def increase_view_count(self):
+        '''
+        处理视频观看次数
+        :return:
+        '''
         # 观看一次增加一次记录
         self.view_count += 1
         self.save(update_fields=['view_count'])

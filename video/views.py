@@ -8,27 +8,46 @@ from .forms import CommentForm
 from .models import Video, Classification
 
 
-class IndexView(generic.ListView):
+class IndexView(generic.ListView):  # ListView：显示对象列表
+    '''
+    展示对象列表（比如所有用户，所有文章）- ListView
+    处理视频列表
+    '''
     model = Video  # 作用于Video模型
     template_name = 'video/index.html'  # 告诉ListView要使用我们已经创建的模版文件
     context_object_name = 'video_list'  # 上下文变量名，告诉ListView，在前端模版文件中，可以使用该变量名来展现数据。
     paginate_by = 12  # 每页显示12条
     c = None
-    #  将分类数据通过Classification.objects.filter(status=True).values()从数据库里面过滤出来，然后赋给classification_list，最后放到context字典里面。
+
     #  主要功能就是传递额外的数据给模板
-    def get_context_data(self, *, object_list=None, **kwargs):
+    def get_context_data(self, *, object_list=None, **kwargs):  # 重载get_context_data方法
+        '''
+        现在的分类id,视频分类并不属于Video模型.如果你想把分类id和视频分类传递给模板，你还可以通过重写get_context_data方法
+        :param object_list:
+        :param kwargs:
+        :return:
+        '''
         context = super(IndexView, self).get_context_data(**kwargs)
-        paginator = context.get('paginator')
-        page = context.get('page_obj')
-        page_list = get_page_list(paginator, page)
-        classification_list = Classification.objects.filter(status=True).values()
-        context['c'] = self.c
+        paginator = context.get('paginator')  # context.get(‘paginator’)返回的是分页对象,分页器
+        page = context.get('page_obj')  # context.get(‘page_obj’)返回的是当前页码
+        page_list = get_page_list(paginator, page)  # 处理分页
+        #  将分类数据通过Classification.objects.filter(status=True).values()从数据库里面过滤出来，
+        classification_list = Classification.objects.filter(status=True).values()  # 获取分类列表
+        context['c'] = self.c  # 为分类的id
+        # 然后赋给classification_list,最后放到context字典里面.
         context['classification_list'] = classification_list
         context['page_list'] = page_list
         return context
+    # 分页功能比较常用，所以需要把它单独拿出来封装到一个单独的文件中，我们新建templates/base/page_nav.html文件
+    # 因为搜索框是很多页面都需要的，所以我们把代码写到templates/base/header.html文件里面。
 
     # get获取数据
     def get_queryset(self):
+        '''
+        该方法可以返回一个量身定制的对象列表。当我们使用Django自带的ListView展示所有对象列表时，ListView默认会返回Model.objects.all(),上面指定了
+        model = Video
+        :return:
+        '''
         self.c = self.request.GET.get("c", None)
         if self.c:  # 如果有值,通过get_object_or_404(Classification, pk=self.c)先获取当前类，然后classification.video_set获取外键数据
             classification = get_object_or_404(Classification, pk=self.c)
@@ -38,18 +57,21 @@ class IndexView(generic.ListView):
 
 
 class SearchListView(generic.ListView):
+    '''
+    处理搜索页面
+    '''
     model = Video
     template_name = 'video/search.html'
     context_object_name = 'video_list'
-    paginate_by = 8
+    paginate_by = 8  # 每页显示8条
     q = ''
 
     def get_queryset(self):
         self.q = self.request.GET.get("q", "")
-        #  title__contains是包含的意思，表示查询title包含q的记录。
-        # 利用filter将数据过滤出来。这里写了两层过滤，第一层过滤搜索关键词，
+        # 利用filter将数据过滤出来。
+        # 这里写了两层过滤，第一层过滤搜索关键词，
         # 第二层过滤status已发布的视频
-        return Video.objects.filter(title__contains=self.q).filter(status=0)
+        return Video.objects.filter(title__contains=self.q).filter(status=0)  # title__contains是包含的意思，表示查询title包含q的记录
 
     #  将获取到的classification_list追加到context字典中
     #  存放额外的数据，包括分页数据、q关键词
@@ -59,17 +81,27 @@ class SearchListView(generic.ListView):
         page = context.get('page_obj')  # 返回当前页码
         page_list = get_page_list(paginator, page)
         context['page_list'] = page_list
-        context['q'] = self.q
+        context['q'] = self.q  # 搜索的关键字
         return context
 
 
 class VideoDetailView(generic.DetailView):
+    '''
+    展示某个对象的详细信息（比如用户资料，比如文章详情) - DetailView
+    处理视频详情页
+    '''
     model = Video
     template_name = 'video/detail.html'
 
     def get_object(self, queryset=None):
+        '''
+        可以通过更具体的get_object()方法来返回一个更具体的对象
+        :param queryset:
+        :return:
+        '''
         obj = super().get_object()
-        obj.increase_view_count()
+        # 每次调用DetailView的时候，django都会回调get_object()这个函数。因此我们可以把increase_view_count()放到get_object()里面执行
+        obj.increase_view_count()  # 添加一个次数自增函数
         return obj
 
     def get_context_data(self, **kwargs):

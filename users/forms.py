@@ -40,6 +40,9 @@ class ProfileForm(forms.ModelForm):
 
 
 class UserLoginForm(AuthenticationForm):
+    '''
+    处理用户登录认证
+    '''
     username = forms.CharField(min_length=4,max_length=30,
                                error_messages={
                                    'min_length': '用户名不少于4个字符',
@@ -63,6 +66,9 @@ class UserLoginForm(AuthenticationForm):
 
 
 class SignUpForm(UserCreationForm):
+    '''
+    处理注册信息验证
+    '''
     username = forms.CharField(min_length=4,max_length=30,
                                error_messages={
                                    'min_length': '用户名不少于4个字符',

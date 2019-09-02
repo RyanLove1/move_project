@@ -3,9 +3,9 @@ from . import views
 
 app_name = 'users'
 urlpatterns = [
-    url('^login/', views.login, name='login'),
-    url('^signup/', views.signup, name='signup'),
-    url('^logout/', views.logout, name='logout'),
+    url('^login/', views.login, name='login'),  # 登录路由
+    url('^signup/', views.signup, name='signup'),  # 注册路由
+    url('^logout/', views.logout, name='logout'),  # 登出路由
     url('^profile/(?P<pk>\d+)/', views.ProfileView.as_view(), name='profile'),
     url('^change_password/', views.change_password, name='change_password'),
     url('^subscribe/(?P<pk>\d+)/', views.SubscribeView.as_view(), name='subscribe'),
