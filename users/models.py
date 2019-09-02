@@ -1,0 +1,24 @@
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+# Create your models here.
+
+class User(AbstractUser):
+    GENDER_CHOICES = (('M','男'),
+                      ('F','女'))
+    nickname = models.CharField(blank=True,null=True,max_length=20)
+    avatar = models.FileField(upload_to='avatar/')  # 头像
+    mobile = models.CharField(blank=True,null=True,max_length=13)  # 手机号
+    gender = models.CharField(max_length=1,choices=GENDER_CHOICES,blank=True)
+    subscribe = models.BooleanField(default=False)  # 是否订阅
+
+    class Meta:
+        db_table = 'v_user'
+
+class Feedback(models.Model):
+    contact = models.CharField(blank=True, null=True, max_length=20)  # 联系方式
+    content = models.CharField(blank=True, null=True, max_length=200)  # 内容
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)  # 时间
+
+    class Meta:
+        db_table = "v_feedback"

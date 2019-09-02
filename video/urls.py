@@ -1,0 +1,13 @@
+from django.conf.urls import url
+from . import views
+
+
+app_name = 'video'
+urlpatterns = [
+    url('index', views.IndexView.as_view(), name='index'),
+    url('search/', views.SearchListView.as_view(), name='search'),
+    #  表示详情信息，注意每条视频都是有自己的主键的，所以设置路径匹配为detail/<int:pk>/,其中<int:pk>表示主键
+    url('detail/(?P<pk>\d+)/', views.VideoDetailView.as_view(), name='detail'),
+    url('like/', views.like, name='like'),
+    url('collect/', views.collect, name='collect'),
+]
