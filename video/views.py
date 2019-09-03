@@ -44,7 +44,8 @@ class IndexView(generic.ListView):  # ListView：显示对象列表
     # get获取数据
     def get_queryset(self):
         '''
-        该方法可以返回一个量身定制的对象列表。当我们使用Django自带的ListView展示所有对象列表时，ListView默认会返回Model.objects.all(),上面指定了
+        该方法可以返回一个量身定制的对象列表。当我们使用Django自带的ListView展示所有对象列表时，
+        ListView默认会返回Model.objects.all(),上面指定了
         model = Video
         :return:
         '''
@@ -105,35 +106,48 @@ class VideoDetailView(generic.DetailView):
         return obj
 
     def get_context_data(self, **kwargs):
+        '''
+        重写get_context_data方法,实现视频推荐
+        推荐逻辑：根据访问次数最高的n个视频来降序排序，然后推荐给用户的
+        :param kwargs:
+        :return:
+        '''
         context = super(VideoDetailView, self).get_context_data(**kwargs)
         form = CommentForm()
-        recommend_list = Video.objects.get_recommend_list()
+        recommend_list = Video.objects.get_recommend_list()  # 通过order_by把view_count降序排序，并选取前4条数据
         context['form'] = form
         context['recommend_list'] = recommend_list
         return context
+    # 当模板拿到数据后，即可渲染显示。这里我们将推荐侧栏的代码封装到templates/video/recommend.html里面. 后期改成基于物品的协同过滤算法推荐
 
-@ajax_required
-@require_http_methods(["POST"])
+@ajax_required  # 验证request必须是ajax请求
+@require_http_methods(["POST"])  # 验证request必须是post请求
 def like(request):
     #  喜欢功能
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated:  # 判断用户是否已登录
         return JsonResponse({"code": 1, "msg": "请先登录"})
     video_id = request.POST['video_id']
     video = Video.objects.get(pk=video_id)
-    user = request.user
-    video.switch_like(user)
+    user = request.user  # 获取已登录的用户
+    video.switch_like(user)  # 调用switch_like(user)来实现喜欢或不喜欢功能
     return JsonResponse({"code": 0, "likes": video.count_likers(), "user_liked": video.user_liked(user)})
 
 
 @ajax_required
 @require_http_methods(["POST"])
 def collect(request):
-    if not request.user.is_authenticated:
+    '''
+    实现收藏功能
+    :param request:
+    :return:
+    '''
+    if not request.user.is_authenticated:  # 判断用户是否已登录
         return JsonResponse({"code": 1, "msg": "请先登录"})
     video_id = request.POST['video_id']
     video = Video.objects.get(pk=video_id)
-    user = request.user
+    user = request.user  # 获取已登录的用户
     video.switch_collect(user)
+    # video.count_collecters()返回收藏的人数,video.user_collected(user)返回当前登录用户是否收藏0代表收藏,1代表未收藏
     return JsonResponse({"code": 0, "collects": video.count_collecters(), "user_collected": video.user_collected(user)})
 
 

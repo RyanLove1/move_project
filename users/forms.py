@@ -11,6 +11,9 @@ def avatar_file_size(value):
 
 
 class ProfileForm(forms.ModelForm):
+    '''
+    处理修改信息验证
+    '''
     nickname = forms.CharField(min_length=1,max_length=20,required=False,
                                error_messages={
                                    'min_length': '昵称至少4个字符',
@@ -99,6 +102,9 @@ class SignUpForm(UserCreationForm):
 
 
 class ChangePwdForm(PasswordChangeForm):
+    '''
+    处理修改密码验证
+    '''
     old_password = forms.CharField(error_messages={'required': '不能为空',},
         widget=forms.PasswordInput(attrs={'placeholder': '请输入旧密码'})
     )
@@ -110,7 +116,9 @@ class ChangePwdForm(PasswordChangeForm):
     )
 
 class SubscribeForm(forms.ModelForm):
-
+    '''
+    订阅功能验证
+    '''
     class Meta:
         model = User
         fields = ['subscribe']

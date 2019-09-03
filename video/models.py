@@ -30,6 +30,10 @@ class VideoQuerySet(models.query.QuerySet):
             return self.order_by('-create_time')
 
     def get_recommend_list(self):
+        '''
+        用户视频推荐
+        :return:
+        '''
         #  通过order_by把view_count降序排序，并选取前4条数据
         return self.filter(status=0).order_by('-view_count')[:4]
 
@@ -81,22 +85,36 @@ class Video(models.Model):
         self.save(update_fields=['view_count'])
 
     def switch_like(self, user):
+        '''
+        实现用户喜欢不喜欢功能
+        :param user:　登录的用户
+        :return:
+        '''
         #  判断用户是否登录，如果登录了则调用switch_like(user)来实现喜欢或不喜欢功能
-        if user in self.liked.all():
+        if user in self.liked.all():  # 如果用户已经在喜欢列表里,则将他移除
             self.liked.remove(user)
         else:
-            self.liked.add(user)
+            self.liked.add(user)  # 如果不在喜欢列表里,将他添加到喜欢列表
 
     def count_likers(self):
+        '''
+        统计喜欢人数
+        :return:
+        '''
         return self.liked.count()
 
     def user_liked(self, user):
-        if user in self.liked.all():
+        if user in self.liked.all():  # 如果用户在喜欢列表里,给前端返回0,不在返回１
             return 0
         else:
             return 1
 
     def switch_collect(self, user):
+        '''
+        实现用户收藏功能,和喜欢不喜欢功能类似
+        :param user:
+        :return:
+        '''
         if user in self.collected.all():
             self.collected.remove(user)
 
@@ -104,6 +122,10 @@ class Video(models.Model):
             self.collected.add(user)
 
     def count_collecters(self):
+        '''
+        统计收藏人数
+        :return:
+        '''
         return self.collected.count()
 
     def user_collected(self, user):

@@ -77,6 +77,7 @@ def logout(request):
 
 def change_password(request):
     '''
+    处理修改密码
     通过验证form合法性，然后调用user.save()来保存修改。
     然后通过update_session_auth_hash来更新session。
     :param request:
@@ -105,6 +106,7 @@ def change_password(request):
 
 class ProfileView(LoginRequiredMixin,AuthorRequiredMixin, generic.UpdateView):
     """
+    处理修改个人信息模块
     继承了LoginRequiredMixin和AuthorRequiredMixin两个类，这两个类属于公共类，
     其中LoginRequiredMixin的用途是：只允许登录的用户访问该视图类，
     AuthorRequiredMixin的用途是：只允许用户自己查看自己的个人资料，别人是无法查看的
@@ -114,11 +116,19 @@ class ProfileView(LoginRequiredMixin,AuthorRequiredMixin, generic.UpdateView):
     template_name = 'users/profile.html'
 
     def get_success_url(self):
+        '''
+        当更新成功后，django会回调get_success_url来将结果告诉模板
+        :return:
+        '''
         messages.success(self.request, "保存成功")
         return reverse('users:profile', kwargs={'pk': self.request.user.pk})
 
 
 class SubscribeView(LoginRequiredMixin,AuthorRequiredMixin, generic.UpdateView):
+    '''
+    处理订阅功能
+    订阅的功能和修改个人资料功能类似，也是属于更新操作，所以同样是使用UpdateView来更新
+    '''
     model = User
     form_class = SubscribeForm
     template_name = 'users/subscribe.html'
