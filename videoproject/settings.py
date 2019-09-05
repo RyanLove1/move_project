@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-SITE_URL = 'https://v.mypython.me/'
+SITE_URL = '127.0.0.1'  # 设置成自己网站的url
 
 ROOT_URLCONF = 'videoproject.urls'
 
@@ -74,6 +74,7 @@ MEDIA_URL = '/upload/'
 # 上传视频最大尺寸
 CHUNKED_UPLOAD_MAX_BYTES = 100000000
 
+# 一定要配置 EMAIL_BACKEND ，因为django默认配置的是一种模拟发邮件的 BackEnd ，并不能使用，故要替换。
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # 邮件配置
@@ -81,7 +82,8 @@ EMAIL_USE_SSL = True
 EMAIL_HOST = 'smtp.163.com'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = 'ryan_yanxu@163.com'
-EMAIL_HOST_PASSWORD = 'YANXU1314'
+EMAIL_HOST_PASSWORD = 'YANxu1314'  # 授权码密码而不是登录密码
+
 
 
 TEMPLATES = [

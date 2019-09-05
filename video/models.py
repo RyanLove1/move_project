@@ -63,9 +63,9 @@ class Video(models.Model):
     status = models.CharField(max_length=1, choices=STATUS_CHOICES, blank=True, null=True)  # 视频状态
     view_count = models.IntegerField(default=0, blank=True)  # 观看次数
     liked = models.ManyToManyField(settings.AUTH_USER_MODEL,
-                                   blank=True, related_name="liked_videos")  # 喜欢的用户,settings.AUTH_USER_MODEL设置用户表
+                                   blank=True, related_name="liked_videos")  # 喜欢的用户,settings.AUTH_USER_MODEL设置用户表,喜欢和用户多对多关系
     collected = models.ManyToManyField(settings.AUTH_USER_MODEL,
-                                       blank=True, related_name="collected_videos")  # 收藏的用户
+                                       blank=True, related_name="collected_videos")  # 收藏的用户,收藏和用户多对多关系,设置别名，通过别名也可以访问数据
     create_time = models.DateTimeField(auto_now_add=True, blank=True, max_length=20)  # 创建时间
 
     #  用了VideoQuerySet查询器，需要我们在Video下面添加一行依赖。

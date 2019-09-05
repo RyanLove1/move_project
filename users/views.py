@@ -139,6 +139,7 @@ class SubscribeView(LoginRequiredMixin,AuthorRequiredMixin, generic.UpdateView):
 
 class FeedbackView(LoginRequiredMixin, generic.CreateView):
     '''
+    处理用户反馈模块
     限流量的技术：ratelimit。这是一个第三方类库，通过使用他，
     可以防止恶意提交数据。它使用超级简单，只需要配置好key和rate即可，
     key代表业务，rate代表速率，这里我们设置key为ip，即限制ip地址，
@@ -148,7 +149,7 @@ class FeedbackView(LoginRequiredMixin, generic.CreateView):
     form_class = FeedbackForm
     template_name = 'users/feedback.html'
 
-    @ratelimit(key='ip', rate='2/m')
+    @ratelimit(key='ip', rate='2/m')  # ip请求频率设置,每分钟只能请求两次
     def post(self, request, *args, **kwargs):
         was_limited = getattr(request, 'limited', False)
         if was_limited:
@@ -161,25 +162,35 @@ class FeedbackView(LoginRequiredMixin, generic.CreateView):
         return reverse('users:feedback')
 
 class CollectListView(generic.ListView):
+    '''
+    处理收藏功能模块
+    '''
     model = User
+    # template_name = 'users/collect_videos.html'和context_object_name = 'video_list'
+    # 表示这个实例要作为名为video_list的参数传入users/collect_videos.html中。
     template_name = 'users/collect_videos.html'
     context_object_name = 'video_list'
+    # video_list对象会作为参数传入users/collect_videos.html，
+    # 之后你就可以在users/collect_videos.html中通过类似{{ video_list.title }}或{{ video_list.author }}的标签来生成特定的页面了。
     paginate_by = 10
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(CollectListView, self).get_context_data(**kwargs)
         paginator = context.get('paginator')
         page = context.get('page_obj')
-        page_list = get_page_list(paginator, page)
+        page_list = get_page_list(paginator, page)  # 获取分页器对象列表
         context['page_list'] = page_list
         return context
     def get_queryset(self):
         user = get_object_or_404(User, pk=self.kwargs.get('pk'))
-        videos = user.collected_videos.all()
+        videos = user.collected_videos.all()  # collected_videos就是models收藏字段中定义的别名
         return videos
 
 
 class LikeListView(generic.ListView):
+    '''
+    处理喜欢功能模块
+    '''
     model = User
     template_name = 'users/like_videos.html'
     context_object_name = 'video_list'

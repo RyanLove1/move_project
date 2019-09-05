@@ -124,6 +124,9 @@ class SubscribeForm(forms.ModelForm):
         fields = ['subscribe']
 
 class FeedbackForm(forms.ModelForm):
+    '''
+    反馈功能验证及表单
+    '''
     content = forms.CharField(min_length=4,max_length=200,
                                error_messages={
                                    'min_length': '至少4个字符',

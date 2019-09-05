@@ -17,7 +17,7 @@ class User(AbstractUser):
     class Meta:
         db_table = 'v_user'
 
-# 反馈的意见
+# 反馈的意见表
 class Feedback(models.Model):
     contact = models.CharField(blank=True, null=True, max_length=20)  # 联系方式
     content = models.CharField(blank=True, null=True, max_length=200)  # 内容

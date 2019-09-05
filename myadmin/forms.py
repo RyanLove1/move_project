@@ -7,6 +7,9 @@ from video.models import Video, Classification
 
 
 class UserLoginForm(AuthenticationForm):
+    '''
+    后台管理登录表单及验证
+    '''
     username = forms.CharField(min_length=4,max_length=30,
                                error_messages={
                                    'min_length': '用户名不少于4个字符',
@@ -30,6 +33,9 @@ class UserLoginForm(AuthenticationForm):
 
 
 class VideoPublishForm(forms.ModelForm):
+    '''
+    视频发布编辑验证及表单
+    '''
     title = forms.CharField(min_length=4, max_length=200, required=True,
                               error_messages={
                                   'min_length': '至少4个字符',
@@ -57,6 +63,9 @@ class VideoPublishForm(forms.ModelForm):
 
 
 class VideoEditForm(forms.ModelForm):
+    '''
+    视频管理编辑验证及表单
+    '''
     title = forms.CharField(min_length=4, max_length=200, required=True,
                               error_messages={
                                   'min_length': '至少4个字符',
@@ -91,6 +100,9 @@ class VideoEditForm(forms.ModelForm):
 
 
 class UserAddForm(forms.ModelForm):
+    '''
+    用户管理添加用户验证及表单
+    '''
     username = forms.CharField(min_length=4,max_length=30,
                                error_messages={
                                    'min_length': '用户名不少于4个字符',
@@ -116,6 +128,9 @@ def username_validate(value):
 
 
 class UserEditForm(forms.ModelForm):
+    '''
+    用户管理修改用户验证及表单
+    '''
     username = forms.CharField(min_length=4, max_length=30, required=True,
                                validators=[username_validate],
                               error_messages={
@@ -143,6 +158,9 @@ class ClassificationAddForm(forms.ModelForm):
         fields = ['title', 'status' ]
 
 class ClassificationEditForm(forms.ModelForm):
+    '''
+    视频分类管理修改验证及表单
+    '''
     title = forms.CharField(min_length=2, max_length=30, required=True,
                               error_messages={
                                   'min_length': '至少2个字符',

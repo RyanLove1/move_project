@@ -3,20 +3,20 @@ from . import views
 
 app_name = 'myadmin'
 urlpatterns = [
-    url('login/', views.login, name='login'),
-    url('logout/', views.logout, name='logout'),
+    url('login/', views.login, name='login'),  # 后台管理登录
+    url('logout/', views.logout, name='logout'),  # 后台管理登出
 
     #----------------------总览---------------------------
     url(r'^$', views.IndexView.as_view(), name='index'),  # 后台首页
 
     #----------------------视频管理------------------------
     # 视频列表
-    url('^video_list/', views.VideoListView.as_view(), name='video_list'),
-    url('video_add/', views.AddVideoView.as_view(), name='video_add'),
+    url('^video_list/', views.VideoListView.as_view(), name='video_list'),   # 视频列表
+    url('video_add/', views.AddVideoView.as_view(), name='video_add'),  # 后台添加视频
     #  前端有个回调方法done()，该方法表示上传完毕，前端可在里面做一些额外的事情
     #  上传完毕后，调用了一个接口api_chunked_upload_complete，来给后端发送一个回执：我已上传完毕
-    url('chunked_upload/',  views.MyChunkedUploadView.as_view(), name='api_chunked_upload'),
-    url('chunked_upload_complete/', views.MyChunkedUploadCompleteView.as_view(),name='api_chunked_upload_complete'),
+    url('chunked_upload/',  views.MyChunkedUploadView.as_view(), name='api_chunked_upload'),  # 上传视频
+    url('chunked_upload_complete/', views.MyChunkedUploadCompleteView.as_view(),name='api_chunked_upload_complete'),  # 上传完毕调用的接口
     # video_publish页面，开始发布前的资料填写
     url('video_publish/(?P<pk>\d+)', views.VideoPublishView.as_view(), name='video_publish'),
     # 点击发布，django将通过UpdateView自动为你更新视频信息。
@@ -28,20 +28,20 @@ urlpatterns = [
     url('video_delete/', views.video_delete, name='video_delete'),
 
     #----------------------分类管理（增删改查）----------------------------
-    url('classification_add/', views.ClassificationAddView.as_view(), name='classification_add'),
-    url('classification_list/', views.ClassificationListView.as_view(), name='classification_list'),
-    url('classification_edit/(?P<pk>\d+)/', views.ClassificationEditView.as_view(), name='classification_edit'),
-    url('classification_delete/', views.classification_delete, name='classification_delete'),
+    url('classification_add/', views.ClassificationAddView.as_view(), name='classification_add'),  # 分类增加管理
+    url('classification_list/', views.ClassificationListView.as_view(), name='classification_list'),  # 分类管理列表
+    url('classification_edit/(?P<pk>\d+)/', views.ClassificationEditView.as_view(), name='classification_edit'),  # 分类管理修改
+    url('classification_delete/', views.classification_delete, name='classification_delete'),  # 分类管理删除
 
     #----------------------评论管理----------------------------
-    url('comment_list/', views.CommentListView.as_view(), name='comment_list'),
-    url('comment_delete/', views.comment_delete, name='comment_delete'),
+    url('comment_list/', views.CommentListView.as_view(), name='comment_list'),  # 评论列表
+    url('comment_delete/', views.comment_delete, name='comment_delete'),  # 删除评论
 
     #----------------------用户管理-------------------------
-    url('user_add/', views.UserAddView.as_view(), name='user_add'),
-    url('user_list/', views.UserListView.as_view(), name='user_list'),
-    url('user_edit/(?P<pk>\d+)',views.UserEditView.as_view(), name='user_edit'),
-    url('user_delete/', views.user_delete, name='user_delete'),
+    url('user_add/', views.UserAddView.as_view(), name='user_add'),  # 添加用户
+    url('user_list/', views.UserListView.as_view(), name='user_list'),  # 用户列表
+    url('user_edit/(?P<pk>\d+)',views.UserEditView.as_view(), name='user_edit'),  # 编辑用户
+    url('user_delete/', views.user_delete, name='user_delete'),  # 删除用户
 
     #-----------------------订阅通知-------------------------
     # 实现发邮件
