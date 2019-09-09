@@ -143,8 +143,8 @@ def collect(request):
     '''
     if not request.user.is_authenticated:  # 判断用户是否已登录
         return JsonResponse({"code": 1, "msg": "请先登录"})
-    video_id = request.POST['video_id']
-    video = Video.objects.get(pk=video_id)
+    video_id = request.POST['video_id']  # 前端获取视频id
+    video = Video.objects.get(pk=video_id)  # 根据id从数据库获取对应的视频对象
     user = request.user  # 获取已登录的用户
     video.switch_collect(user)
     # video.count_collecters()返回收藏的人数,video.user_collected(user)返回当前登录用户是否收藏0代表收藏,1代表未收藏

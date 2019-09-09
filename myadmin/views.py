@@ -438,6 +438,7 @@ def user_delete(request):
 class SubscribeView(SuperUserRequiredMixin, generic.View):
     '''
     处理订阅功能邮件发送
+    SuperUserRequiredMixin超级用户拦截器
     '''
     def get(self, request):
         '''
@@ -481,6 +482,7 @@ class SubscribeView(SuperUserRequiredMixin, generic.View):
 class FeedbackListView(AdminUserRequiredMixin, generic.ListView):
     '''
     处理用户反馈功能模块
+    AdminUserRequiredMixin管理员拦截器
     '''
     model = Feedback
     template_name = 'myadmin/feedback_list.html'
