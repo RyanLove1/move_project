@@ -7,7 +7,7 @@ urlpatterns = [
     url('logout/', views.logout, name='logout'),  # 后台管理登出
 
     #----------------------总览---------------------------
-    url(r'^$', views.IndexView.as_view(), name='index'),  # 后台首页
+    url(r'^$', views.IndexView.as_view(), name='index'),  # 后台首页,数据总览功能
 
     #----------------------视频管理------------------------
     # 视频列表
@@ -50,6 +50,6 @@ urlpatterns = [
     url('subscribe/', views.SubscribeView.as_view(), name='subscribe'),
 
     # -----------------------用户反馈-------------------------
-    url('feedback_list/', views.FeedbackListView.as_view(), name='feedback_list'),
-    url('feedback_delete/', views.feedback_delete, name='feedback_delete'),
+    url('feedback_list/', views.FeedbackListView.as_view(), name='feedback_list'),  # 反馈列表
+    url('feedback_delete/', views.feedback_delete, name='feedback_delete'),  # 反馈删除
 ]

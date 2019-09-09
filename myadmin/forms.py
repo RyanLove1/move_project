@@ -146,6 +146,9 @@ class UserEditForm(forms.ModelForm):
 
 
 class ClassificationAddForm(forms.ModelForm):
+    '''
+    视频分类管理添加验证及表单
+    '''
     title = forms.CharField(min_length=2, max_length=30, required=True,
                             error_messages={
                                 'min_length': '至少2个字符',

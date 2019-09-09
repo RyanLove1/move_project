@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-SITE_URL = '127.0.0.1'  # 设置成自己网站的url
+SITE_URL = '127.0.0.1'  # 设置成自己网站的url,发送邮件,邮件内容网站链接
 
 ROOT_URLCONF = 'videoproject.urls'
 

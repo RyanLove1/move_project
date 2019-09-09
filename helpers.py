@@ -17,13 +17,11 @@ def get_page_list(paginator, page):
         当前页<=5时，起始页为1
         当前页>(总页数-5)时，起始页为(总页数-9)
         其他情况 起始页为(当前页-5)
-    假设一共16页
-    情况1: 当前页==5  则页码列表为[1,2,3,4,5,6,7,8,9,10]
-    情况2: 当前页==8  则页码列表为[3,4,5,6,7,8,9,10,11,12]
-    情况3: 当前页==15 则页码列表为[7,8,9,10,11,12,13,14,15,16]
-
+    举例：假设一共16页
+        情况1: 当前页==5  则页码列表为[1,2,3,4,5,6,7,8,9,10]
+        情况2: 当前页==8  则页码列表为[3,4,5,6,7,8,9,10,11,12]
+        情况3: 当前页==15 则页码列表为[7,8,9,10,11,12,13,14,15,16]
     """
-
     page_list = []
 
     if paginator.num_pages > 10:
@@ -43,11 +41,11 @@ def get_page_list(paginator, page):
     return page_list
 
 def ajax_required(f):
-    """Not a mixin, but a nice decorator to validate than a request is AJAX"""
+    """Not a mixin, but a nice decorator to validate than a request is AJAX
+    处理视频删除装饰器,要求必须是ajax请求"""
     def wrap(request, *args, **kwargs):
-        if not request.is_ajax():
+        if not request.is_ajax():  # 必须是ajax请求
             return HttpResponseBadRequest()
-
         return f(request, *args, **kwargs)
 
     wrap.__doc__ = f.__doc__
@@ -55,26 +53,35 @@ def ajax_required(f):
     return wrap
 
 def send_html_email(subject, html_message, to_list):
+    '''
+    处理发送邮件功能
+    :param subject: 发送邮件标题
+    :param html_message: 发送邮件内容
+    :param to_list: 收邮件的列表
+    :return:
+    '''
     plain_message = strip_tags(html_message)
-    from_email = settings.EMAIL_HOST_USER
+    from_email = settings.EMAIL_HOST_USER  # 发件人的邮箱
     send_mail(subject, plain_message, from_email, to_list, html_message=html_message)
-
 
 def send_email(subject, content, to_list):
 
     """
+    真正处理发送邮件
     Example:
     subject = 'test subject'
     content = 'hello, this is content'
     to_list = ['abc@qq.com','abcd@163.com']
-    send_email(subject, content, to_list)
+    send_email(subject, content, from_email, to_list)
 
     """
     try:
         message = (subject, content, settings.EMAIL_HOST_USER, to_list)
         # do not forget set password
         print("--> is sending email")
-        send_mass_mail((message,))
+        # send_mail每次发邮件都会建立一个连接，发多封邮件时建立多个连接。
+        # 而 send_mass_mail 是建立单个连接发送多封邮件，所以一次性发送多封邮件时 send_mass_mail 要优于 send_mail。
+        send_mass_mail((message,))  # 最终调用的是django自带的 send_mass_mail 函数，该函数封装了发送邮件的细节
     except smtplib.SMTPException :
         print("--> send fail")
         return HttpResponse("fail")

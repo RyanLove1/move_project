@@ -10,6 +10,7 @@ class CommentQuerySet(models.query.QuerySet):
         return self.count()
     # 今日新增
     def get_today_count(self):
+        # 通过exclude来过滤时间，使用了 lt 标签来过滤
         return self.exclude(timestamp__lt=datetime.date.today()).count()
 
 class Comment(models.Model):

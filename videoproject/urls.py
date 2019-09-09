@@ -21,10 +21,10 @@ from video import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^video/',include('video.urls')),
-    url(r'^myadmin/', include('myadmin.urls')),
-    url(r'^users/',include('users.urls')),
-    url(r'^comment/',include('comment.urls')),
+    url(r'^video/',include('video.urls')),  # 视频
+    url(r'^myadmin/', include('myadmin.urls')),  # 后台管理
+    url(r'^users/',include('users.urls')),  # 用户
+    url(r'^comment/',include('comment.urls')),  # 评论
     url('^$', views.IndexView.as_view(), name='home'), # 默认首页
 
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # 静态文件路径设置

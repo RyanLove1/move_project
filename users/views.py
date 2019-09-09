@@ -189,7 +189,7 @@ class CollectListView(generic.ListView):
 
 class LikeListView(generic.ListView):
     '''
-    处理喜欢功能模块
+    处理喜欢功能模块,和处理收藏功能模块差不多
     '''
     model = User
     template_name = 'users/like_videos.html'

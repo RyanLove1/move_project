@@ -54,17 +54,18 @@ def logout(request):
 
 class IndexView(AdminUserRequiredMixin, generic.View):
     """
-    总览数据
+    后台首页,总览数据
     """
 
     def get(self, request):
-        video_count = Video.objects.get_count()
-        video_has_published_count = Video.objects.get_published_count()
-        video_not_published_count = Video.objects.get_not_published_count()
-        user_count = User.objects.count()
-        user_today_count = User.objects.exclude(date_joined__lt=datetime.date.today()).count()
-        comment_count = Comment.objects.get_count()
-        comment_today_count = Comment.objects.get_today_count()
+        video_count = Video.objects.get_count()  # 获取视频总数
+        video_has_published_count = Video.objects.get_published_count()  # 获取发布数
+        video_not_published_count = Video.objects.get_not_published_count()  # 获取未发布数
+        user_count = User.objects.count()  # 获取用户总数
+        # 通过exclude来过滤时间，使用了 lt 标签来过滤
+        user_today_count = User.objects.exclude(date_joined__lt=datetime.date.today()).count()  # 获取当天用户数
+        comment_count = Comment.objects.get_count()  # 获取评论内容总数
+        comment_today_count = Comment.objects.get_today_count()  # 获取当天评论内容数
         data = {"video_count": video_count,
                 "video_has_published_count": video_has_published_count,
                 "video_not_published_count": video_not_published_count,
@@ -72,7 +73,7 @@ class IndexView(AdminUserRequiredMixin, generic.View):
                 "user_today_count": user_today_count,
                 "comment_count": comment_count,
                 "comment_today_count": comment_today_count}
-        return render(self.request, 'myadmin/index.html', data)
+        return render(self.request, 'myadmin/index.html', data)  # 将数据整理成字典格式发给前端
 
 
 class AddVideoView(SuperUserRequiredMixin, TemplateView):
@@ -203,7 +204,7 @@ class VideoListView(AdminUserRequiredMixin, generic.ListView):
         :return:
         '''
         self.q = self.request.GET.get("q", "")
-        return Video.objects.get_search_list(self.q)
+        return Video.objects.get_search_list(self.q)  # get_search_list处理搜索结果
 
 
 class ClassificationListView(AdminUserRequiredMixin, generic.ListView):
@@ -444,7 +445,7 @@ class SubscribeView(SuperUserRequiredMixin, generic.View):
         :param request:
         :return:
         '''
-        video_list = Video.objects.get_published_list()
+        video_list = Video.objects.get_published_list()  # 获取视频对象列表
         return render(request, "myadmin/subscribe.html" ,{'video_list':video_list})
 
     def post(self, request):
@@ -455,12 +456,12 @@ class SubscribeView(SuperUserRequiredMixin, generic.View):
         '''
         if not request.user.is_superuser:
             return JsonResponse({"code": 1, "msg": "无权限"})
-        video_id = request.POST['video_id']
-        video = Video.objects.get(id=video_id)
+        video_id = request.POST['video_id']  # 从前端获取视频id
+        video = Video.objects.get(id=video_id)  # 数据库中获取视频对象
         subject = video.title  # 发送视频的标题
         context = {'video': video,'site_url':settings.SITE_URL}  # 包含video对象和设置里面设置好的网址
         html_message = render_to_string('myadmin/mail_template.html', context)  # 跳转到mail_template.html页面,并且把发送邮件的内容传递过去
-        email_list = User.objects.filter(subscribe=True).values_list('email',flat=True)  # 订阅视频用户的email列表
+        email_list = User.objects.filter(subscribe=True).values_list('email',flat=True)  # 订阅视频用户的email列表,加个参数flat=True可以获取email的值列表
         # 分组
         email_list = [email_list[i:i + 2] for i in range(0, len(email_list), 2)]  # 列表套列表
         print(email_list)
@@ -470,7 +471,7 @@ class SubscribeView(SuperUserRequiredMixin, generic.View):
                 try:
                     send_html_email(subject, html_message, to_list)  # 调用send_html_email发送邮件
                 except smtplib.SMTPException as e:
-                    logger.error(e)  # 写入日志
+                    logger.error(e)  # 错误信息写入日志
                     return JsonResponse({"code": 1, "msg": "发送失败"})
             return JsonResponse({"code": 0, "msg": "success"})
         else:
@@ -488,26 +489,36 @@ class FeedbackListView(AdminUserRequiredMixin, generic.ListView):
     q = ''
 
     def get_context_data(self, *, object_list=None, **kwargs):
+        '''
+        传递了分页数据
+        :param object_list:
+        :param kwargs:
+        :return:
+        '''
         context = super(FeedbackListView, self).get_context_data(**kwargs)
         paginator = context.get('paginator')
         page = context.get('page_obj')
-        page_list = get_page_list(paginator, page)
+        page_list = get_page_list(paginator, page)  # 分页器
         context['page_list'] = page_list
         context['q'] = self.q
         return context
 
     def get_queryset(self):
+        '''
+        传递了搜索数据
+        :return:
+        '''
         self.q = self.request.GET.get("q", "")
         return Feedback.objects.filter(content__contains=self.q).order_by('-timestamp')
 
 
-@ajax_required
-@require_http_methods(["POST"])
+@ajax_required  # 必须是ajax请求装饰器
+@require_http_methods(["POST"])  # 必须是post请求
 def feedback_delete(request):
     if not request.user.is_superuser:
         return JsonResponse({"code": 1, "msg": "无删除权限"})
-    feedback_id = request.POST['feedback_id']
-    instance = Feedback.objects.get(id=feedback_id)
-    instance.delete()
+    feedback_id = request.POST['feedback_id']  # 获取前端反馈信息id
+    instance = Feedback.objects.get(id=feedback_id)  # 数据库中获取对应的反馈信息
+    instance.delete()  # 删除反馈
     return JsonResponse({"code": 0, "msg": "success"})
 
